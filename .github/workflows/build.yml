@@ -1,3 +1,4 @@
+---
 name: Build
 
 on:
@@ -29,10 +30,12 @@ jobs:
         run: sudo systemctl start mysql
 
       - name: Configure MySQL server
-        run: mysql -proot -uroot -e "GRANT ALL PRIVILEGES ON db_similibanq.* TO 'root'@'localhost'; FLUSH PRIVILEGES"
+        run: mysql -proot -uroot -e "GRANT ALL PRIVILEGES ON db_similibanq.* TO 'root'@'localhost';
+        FLUSH PRIVILEGES"
 
       - name: Update MySQL client configuration
-        run: sed -Ei 's/spring.datasource.(username|password) *=.*/spring.datasource.\1=root/g' src/main/resources/application.properties
+        run: sed -Ei 's/spring.datasource.(username|password) *=.*/spring.datasource.\1=root/g'
+        src/main/resources/application.properties
 
       - name: Build with Gradle
         run: gradle build -x googleJavaFormat
