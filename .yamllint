@@ -4,3 +4,6 @@ extends: default
 rules:
   line-length:
     max: 200
+  brackets:
+    forbid: false
+    min-spaces-inside: 1
