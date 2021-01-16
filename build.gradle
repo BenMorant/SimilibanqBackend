@@ -2,11 +2,42 @@ plugins {
 	id 'org.springframework.boot' version '2.4.2'
 	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
 	id 'java'
+	id 'checkstyle'
+	id 'com.github.sherter.google-java-format' version '0.8'
+	id 'jacoco'
+	id 'com.github.spotbugs' version '4.4.1'
+	id 'application'
 }
 
 group = 'com.benmorant.katas.bankingapp'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '11'
+
+checkstyle {
+	toolVersion = '8.33'
+	maxErrors = 0
+}
+
+application {
+	mainClass = 'com.benmorant.katas.bankingapp.similibanq.SimilibanqApplication'
+}
+
+
+checkstyleMain.dependsOn 'googleJavaFormat'
+
+spotbugsMain {
+	reports {
+		html.enabled = true
+		xml.enabled = false
+	}
+}
+
+spotbugsTest {
+	reports {
+		html.enabled = true
+		xml.enabled = false
+	}
+}
 
 configurations {
 	compileOnly {
@@ -35,8 +66,28 @@ dependencies {
 	annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.security:spring-security-test'
+
+	// SpotBugs and its dependencies
+	compileOnly 'com.google.code.findbugs:annotations:3.0.1'
+	compileOnly 'com.google.code.findbugs:jsr305:3.0.2'
+
+	testCompile group: 'org.assertj', name: 'assertj-core', version: '3.16.1'
+	developmentOnly 'org.springframework.boot:spring-boot-devtools'
+	runtimeOnly 'mysql:mysql-connector-java'
+	annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+	annotationProcessor 'org.projectlombok:lombok'
+	testImplementation('org.springframework.boot:spring-boot-starter-test') {
+		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+	}
+	testImplementation 'io.projectreactor:reactor-test'
 }
+
 
 test {
 	useJUnitPlatform()
+	finalizedBy jacocoTestReport
+}
+
+jacocoTestReport {
+	dependsOn test
 }
