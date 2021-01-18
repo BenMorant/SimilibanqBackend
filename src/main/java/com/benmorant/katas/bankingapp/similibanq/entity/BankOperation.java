@@ -1,9 +1,6 @@
 package com.benmorant.katas.bankingapp.similibanq.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
@@ -11,29 +8,17 @@ import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import javax.persistence.Column;
-import javax.persistence.DiscriminatorColumn;
-import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import org.springframework.data.relational.core.mapping.Table;
 
-@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
-@JsonSubTypes({
-  @Type(value = Deposit.class, name = "deposit"),
-  @Type(value = Withdrawal.class, name = "withdrawal")
-})
 @Entity
-@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-@DiscriminatorColumn(name = "operation_type")
-@DiscriminatorValue("BankOperation")
 @Table
-public abstract class BankOperation implements Serializable {
+public class BankOperation implements Serializable {
 
   private static final long serialVersionUID = 1L;
 
@@ -41,6 +26,9 @@ public abstract class BankOperation implements Serializable {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "id_operation")
   private Long idOperation;
+
+  @Column(name = "operation_type")
+  private String operationType;
 
   @JsonDeserialize(using = LocalDateTimeDeserializer.class)
   @JsonSerialize(using = LocalDateTimeSerializer.class)
@@ -55,12 +43,14 @@ public abstract class BankOperation implements Serializable {
   @JsonIgnore
   private Account account;
 
-  protected BankOperation() {}
+  public BankOperation() {}
 
-  protected BankOperation(LocalDateTime operationDate, double amount, Account account) {
+  public BankOperation(
+      LocalDateTime operationDate, double amount, Account account, String operationType) {
     this.operationDate = operationDate;
     this.amount = amount;
     this.account = account;
+    this.operationType = operationType;
   }
 
   public Long getIdOperation() {

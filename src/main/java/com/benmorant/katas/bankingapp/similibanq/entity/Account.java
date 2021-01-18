@@ -1,37 +1,22 @@
 package com.benmorant.katas.bankingapp.similibanq.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import java.io.Serializable;
 import java.util.List;
 import javax.persistence.Column;
-import javax.persistence.DiscriminatorColumn;
-import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import org.springframework.data.relational.core.mapping.Table;
 
-@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
-@JsonSubTypes({
-  @Type(value = CurrentAccount.class, name = "current_account"),
-  @Type(value = SavingsAccount.class, name = "savings_account")
-})
 @Entity
-@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-@DiscriminatorColumn(name = "account_type")
-@DiscriminatorValue("Account")
 @Table
-public abstract class Account implements Serializable {
+public class Account implements Serializable {
 
   private static final long serialVersionUID = 1L;
 
@@ -43,6 +28,12 @@ public abstract class Account implements Serializable {
   @Column(name = "balance")
   private double balance;
 
+  @Column(name = "interest_rate")
+  private double interestRate;
+
+  @Column(name = "overdraft")
+  private double overdraft;
+
   @ManyToOne
   @JoinColumn(name = "id_customer")
   @JsonIgnore
@@ -51,11 +42,13 @@ public abstract class Account implements Serializable {
   @OneToMany(mappedBy = "account", fetch = FetchType.LAZY)
   private List<BankOperation> bankOperations;
 
-  protected Account() {}
+  public Account() {}
 
-  protected Account(double balance, Customer customer) {
+  public Account(double balance, Customer customer, double interestRate, double overdraft) {
     this.balance = balance;
     this.customer = customer;
+    this.interestRate = interestRate;
+    this.overdraft = overdraft;
   }
 
   public Long getIdAccount() {
@@ -88,5 +81,21 @@ public abstract class Account implements Serializable {
 
   public void setBankOperations(List<BankOperation> bankOperations) {
     this.bankOperations = bankOperations;
+  }
+
+  public double getInterestRate() {
+    return interestRate;
+  }
+
+  public void setInterestRate(double interestRate) {
+    this.interestRate = interestRate;
+  }
+
+  public double getOverdraft() {
+    return overdraft;
+  }
+
+  public void setOverdraft(double overdraft) {
+    this.overdraft = overdraft;
   }
 }

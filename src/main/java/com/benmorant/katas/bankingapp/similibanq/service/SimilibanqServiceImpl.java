@@ -4,9 +4,8 @@ import com.benmorant.katas.bankingapp.similibanq.dao.AccountDao;
 import com.benmorant.katas.bankingapp.similibanq.dao.BankOperationDao;
 import com.benmorant.katas.bankingapp.similibanq.dao.CustomerDao;
 import com.benmorant.katas.bankingapp.similibanq.entity.Account;
+import com.benmorant.katas.bankingapp.similibanq.entity.BankOperation;
 import com.benmorant.katas.bankingapp.similibanq.entity.Customer;
-import com.benmorant.katas.bankingapp.similibanq.entity.Deposit;
-import com.benmorant.katas.bankingapp.similibanq.entity.Withdrawal;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,7 +43,8 @@ public class SimilibanqServiceImpl implements SimilibanqService {
   @Override
   public void addToAccount(Long idAccount, double amount) {
     Account currentAccount = getAccountById(idAccount);
-    Deposit deposit = new Deposit(LocalDateTime.now(), amount, currentAccount);
+    BankOperation deposit =
+        new BankOperation(LocalDateTime.now(), amount, currentAccount, "deposit");
     bankOperationDao.save(deposit);
     currentAccount.setBalance(currentAccount.getBalance() + amount);
     accountDao.save(currentAccount);
@@ -53,7 +53,8 @@ public class SimilibanqServiceImpl implements SimilibanqService {
   @Override
   public void removeFromAccount(Long idAccount, double amount) {
     Account currentAccount = getAccountById(idAccount);
-    Withdrawal withdrawal = new Withdrawal(LocalDateTime.now(), amount, currentAccount);
+    BankOperation withdrawal =
+        new BankOperation(LocalDateTime.now(), amount, currentAccount, "withdrawal");
     bankOperationDao.save(withdrawal);
     currentAccount.setBalance(currentAccount.getBalance() - amount);
     accountDao.save(currentAccount);
