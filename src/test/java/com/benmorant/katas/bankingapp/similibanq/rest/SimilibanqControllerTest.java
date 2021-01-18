@@ -83,22 +83,21 @@ class SimilibanqControllerTest {
     // Given
     Long inputIdAccount = 1L;
     String inputUri = "/rest/similibanq-api/public/account/" + inputIdAccount;
-    String expectedContent =
-        "{\"type\":\"current_account\",\"idAccount\":1,\"balance\":1000.0,\"bankOperations\""
-            + ":[{\"type\":\"withdrawal\",\"idOperation\":1,\"operationDate\""
-            + ":\"2019-06-07T02:00:00\",\"amount\":40.5}],\"overdraft\":-10.0}";
+
     String actualContent;
     int actualStatus;
     int expectedStatus = 200;
+    Account actualAccount;
 
     // When
     MvcResult mvcResult = mockMvc.perform(get(inputUri).contentType(APPLICATION_JSON)).andReturn();
     actualStatus = mvcResult.getResponse().getStatus();
     actualContent = mvcResult.getResponse().getContentAsString();
+    actualAccount = mapFromJson(actualContent, Account.class);
 
     // Then
     assertThat(actualStatus).isEqualTo(expectedStatus);
-    assertThat(actualContent).isEqualTo(expectedContent);
+    assertThat(actualAccount).isNotNull();
   }
 
   @Test
