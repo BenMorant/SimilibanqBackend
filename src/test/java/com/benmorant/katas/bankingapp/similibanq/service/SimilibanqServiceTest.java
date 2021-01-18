@@ -7,9 +7,7 @@ import com.benmorant.katas.bankingapp.similibanq.dao.AccountDao;
 import com.benmorant.katas.bankingapp.similibanq.dao.BankOperationDao;
 import com.benmorant.katas.bankingapp.similibanq.dao.CustomerDao;
 import com.benmorant.katas.bankingapp.similibanq.entity.Account;
-import com.benmorant.katas.bankingapp.similibanq.entity.CurrentAccount;
 import com.benmorant.katas.bankingapp.similibanq.entity.Customer;
-import com.benmorant.katas.bankingapp.similibanq.entity.SavingsAccount;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -33,8 +31,8 @@ public class SimilibanqServiceTest {
   @BeforeEach
   public void initEach() {
     Customer paul = new Customer("Paul", "A1234567");
-    Account account1 = new CurrentAccount(1000.0, paul, 0.0);
-    Account account2 = new SavingsAccount(500.0, paul, 0.0);
+    Account account1 = new Account(1000.0, paul, 0.0, 0.0);
+    Account account2 = new Account(500.0, paul, 0.0, 0.0);
     List<Account> paulAccounts = new ArrayList<>();
     paulAccounts.add(account1);
     paulAccounts.add(account2);
