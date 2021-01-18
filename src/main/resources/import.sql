@@ -1,5 +1,5 @@
 /* Customer */
-INSERT INTO `customer` (first_name, last_name, customer_identifier) VALUES ('Paul', 'Durand', 'A1234567');
+INSERT INTO `customer` (name, customer_identifier) VALUES ('Paul Durand', 'A1234567');
 
 /* Account */
 

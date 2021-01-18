@@ -1,83 +1,65 @@
 package com.benmorant.katas.bankingapp.similibanq.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.any;
 
+import com.benmorant.katas.bankingapp.similibanq.dao.AccountDao;
+import com.benmorant.katas.bankingapp.similibanq.dao.BankOperationDao;
+import com.benmorant.katas.bankingapp.similibanq.dao.CustomerDao;
 import com.benmorant.katas.bankingapp.similibanq.entity.Account;
+import com.benmorant.katas.bankingapp.similibanq.entity.CurrentAccount;
+import com.benmorant.katas.bankingapp.similibanq.entity.Customer;
+import com.benmorant.katas.bankingapp.similibanq.entity.SavingsAccount;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import javax.persistence.EntityManager;
-import javax.sql.DataSource;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.jdbc.core.JdbcTemplate;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-@SpringBootTest
+@ExtendWith(MockitoExtension.class)
 public class SimilibanqServiceTest {
 
-  @Autowired private SimilibanqService similibanqService;
+  private SimilibanqService similibanqService;
 
-  @Autowired private DataSource dataSource;
-  @Autowired private JdbcTemplate jdbcTemplate;
-  @Autowired private EntityManager entityManager;
+  @Mock private AccountDao accountDao;
+  @Mock private BankOperationDao bankOperationDao;
 
-  @Test
-  public void contextLoads() {
-    assertThat(dataSource).isNotNull();
-    assertThat(jdbcTemplate).isNotNull();
-    assertThat(entityManager).isNotNull();
-    assertThat(similibanqService).isNotNull();
+  @Mock private CustomerDao customerDao;
+
+  @BeforeEach
+  public void initEach() {
+    Customer paul = new Customer("Paul", "A1234567");
+    Account account1 = new CurrentAccount(1000.0, paul);
+    Account account2 = new SavingsAccount(500.0, paul);
+    List<Account> paulAccounts = new ArrayList<>();
+    paulAccounts.add(account1);
+    paulAccounts.add(account2);
+    similibanqService = new SimilibanqServiceImpl(accountDao, customerDao, bankOperationDao);
+    Mockito.lenient()
+        .when(accountDao.findById(any(Long.class)))
+        .thenReturn(java.util.Optional.of(account1));
+    Mockito.lenient().when(accountDao.findByCustomer(any(Customer.class))).thenReturn(paulAccounts);
+    Mockito.lenient()
+        .when(customerDao.findByCustomerIdentifier(any(String.class)))
+        .thenReturn(paul);
   }
 
   @Test
-  public void should_return_1L_when_id_equals_1L() {
+  public void should_return_paul_when_id_equals_1L() {
     // Given
     Long inputId = 1L;
     Account actualAccount;
-    Long expectedAccountId = 1L;
+    String expectedName = "paul";
 
     // When
     actualAccount = similibanqService.getAccountById(inputId);
 
     // Then
-    assertThat(actualAccount.getIdAccount()).isEqualTo(expectedAccountId);
-  }
-
-  @Test
-  public void should_return_empty_list_when_customer_identifier_equals_empty() {
-    // Given
-    String inputIdentifier = "";
-    List<Account> actualAccounts;
-    List<Long> expectedAccountsId = new ArrayList<>();
-    List<Long> actualAccountsId = new ArrayList<>();
-
-    // When
-    actualAccounts = similibanqService.getAccountsByCustomerIdentifier(inputIdentifier);
-    for (Account actualAccount : actualAccounts) {
-      actualAccountsId.add(actualAccount.getIdAccount());
-    }
-
-    // Then
-    assertThat(actualAccountsId).isEqualTo(expectedAccountsId);
-  }
-
-  @Test
-  public void should_return_empty_list_when_customer_identifier_doesn_t_exist() {
-    // Given
-    String inputIdentifier = "#4(X32";
-    List<Account> actualAccounts;
-    List<Long> expectedAccountsId = new ArrayList<>();
-    List<Long> actualAccountsId = new ArrayList<>();
-
-    // When
-    actualAccounts = similibanqService.getAccountsByCustomerIdentifier(inputIdentifier);
-    for (Account actualAccount : actualAccounts) {
-      actualAccountsId.add(actualAccount.getIdAccount());
-    }
-
-    // Then
-    assertThat(actualAccountsId).isEqualTo(expectedAccountsId);
+    assertThat(actualAccount.getCustomer().getName()).isEqualToIgnoringCase(expectedName);
   }
 
   @Test
@@ -85,16 +67,113 @@ public class SimilibanqServiceTest {
     // Given
     String inputIdentifier = "A1234567";
     List<Account> actualAccounts;
-    List<Long> expectedAccountsId = new ArrayList<>(Arrays.asList(1L, 2L));
-    List<Long> actualAccountsId = new ArrayList<>();
+    List<Double> expectedAccountsBalances = new ArrayList<>(Arrays.asList(1000.0, 500.0));
+    List<Double> actualAccountsBalances = new ArrayList<>();
 
     // When
     actualAccounts = similibanqService.getAccountsByCustomerIdentifier(inputIdentifier);
     for (Account actualAccount : actualAccounts) {
-      actualAccountsId.add(actualAccount.getIdAccount());
+      actualAccountsBalances.add(actualAccount.getBalance());
     }
 
     // Then
-    assertThat(actualAccountsId).isEqualTo(expectedAccountsId);
+    assertThat(actualAccountsBalances).isEqualTo(expectedAccountsBalances);
+  }
+
+  @Test
+  public void actual_balance_should_be_same_as_expected_balance() {
+    // Given
+    Long inputAccountId = 1L;
+    double expectedBalance = 1000.0;
+    similibanqService.getAccountById(inputAccountId).setBalance(expectedBalance);
+    // When
+    double actualBalance = similibanqService.getAccountById(inputAccountId).getBalance();
+    // Then
+    assertThat(actualBalance).isEqualTo(expectedBalance);
+  }
+
+  @Test
+  public void should_add_0_to_balance_when_addToAccount_0() {
+    // Given
+    Long inputAccountId = 1L;
+    double inputamount = 0.0;
+    double expectedBalance = 1000.0;
+
+    // When
+    similibanqService.addToAccount(inputAccountId, inputamount);
+    double actualBalance = similibanqService.getAccountById(inputAccountId).getBalance();
+    // Then
+    assertThat(actualBalance).isEqualTo(expectedBalance);
+  }
+
+  @Test
+  public void should_not_add_0_to_balance_when_addToAccount_10() {
+    // Given
+    Long inputAccountId = 1L;
+    double inputamount = 10.0;
+    double expectedBalance = 1000.0;
+
+    // When
+    similibanqService.addToAccount(inputAccountId, inputamount);
+    double actualBalance = similibanqService.getAccountById(inputAccountId).getBalance();
+    // Then
+    assertThat(actualBalance).isNotEqualTo(expectedBalance);
+  }
+
+  @Test
+  public void should_add_10_to_balance_when_addToAccount_10() {
+    // Given
+    Long inputAccountId = 1L;
+    double inputamount = 10.0;
+    double expectedBalance = 1000.0 + inputamount;
+
+    // When
+    similibanqService.addToAccount(inputAccountId, inputamount);
+    double actualBalance = similibanqService.getAccountById(inputAccountId).getBalance();
+    // Then
+    assertThat(actualBalance).isEqualTo(expectedBalance);
+  }
+
+  @Test
+  public void should_remove_0_to_balance_when_RemoveFromAccount_0() {
+    // Given
+    Long inputAccountId = 1L;
+    double inputamount = 0.0;
+    double expectedBalance = 1000.0;
+
+    // When
+    similibanqService.removeFromAccount(inputAccountId, inputamount);
+    double actualBalance = similibanqService.getAccountById(inputAccountId).getBalance();
+    // Then
+    assertThat(actualBalance).isEqualTo(expectedBalance);
+  }
+
+  @Test
+  public void should_not_remove_0_to_balance_when_removeFromAccount_10() {
+    // Given
+    Long inputAccountId = 1L;
+    double inputamount = 10.0;
+    double expectedBalance = 1000.0;
+
+    // When
+    similibanqService.removeFromAccount(inputAccountId, inputamount);
+    double actualBalance = similibanqService.getAccountById(inputAccountId).getBalance();
+    // Then
+    assertThat(actualBalance).isNotEqualTo(expectedBalance);
+  }
+
+  @Test
+  public void should_remove_10_to_balance_when_removeFromAccount_10() {
+    // Given
+    Long inputAccountId = 1L;
+    double inputamount = 10.0;
+    double expectedBalance = 1000.0 - inputamount;
+
+    // When
+    similibanqService.removeFromAccount(inputAccountId, inputamount);
+    double actualBalance = similibanqService.getAccountById(inputAccountId).getBalance();
+    System.out.println("actualBalance = " + actualBalance);
+    // Then
+    assertThat(actualBalance).isEqualTo(expectedBalance);
   }
 }

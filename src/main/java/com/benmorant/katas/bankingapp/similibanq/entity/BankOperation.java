@@ -21,6 +21,7 @@ import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import org.springframework.data.relational.core.mapping.Table;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
 @JsonSubTypes({
@@ -31,6 +32,7 @@ import javax.persistence.ManyToOne;
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "operation_type")
 @DiscriminatorValue("BankOperation")
+@Table
 public abstract class BankOperation implements Serializable {
 
   private static final long serialVersionUID = 1L;
@@ -55,9 +57,7 @@ public abstract class BankOperation implements Serializable {
 
   protected BankOperation() {}
 
-  protected BankOperation(
-      Long idOperation, LocalDateTime operationDate, double amount, Account account) {
-    this.idOperation = idOperation;
+  protected BankOperation(LocalDateTime operationDate, double amount, Account account) {
     this.operationDate = operationDate;
     this.amount = amount;
     this.account = account;
