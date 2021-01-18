@@ -11,7 +11,7 @@ public class CurrentAccount extends Account {
   public CurrentAccount() {}
 
   public CurrentAccount(
-      Integer idAccount, double balance, Customer customer, List<BankOperation> bankOperations) {
+      Long idAccount, double balance, Customer customer, List<BankOperation> bankOperations) {
     super(idAccount, balance, customer, bankOperations);
   }
 }

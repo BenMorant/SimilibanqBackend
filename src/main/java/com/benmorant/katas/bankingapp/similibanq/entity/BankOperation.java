@@ -1,5 +1,6 @@
 package com.benmorant.katas.bankingapp.similibanq.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
@@ -43,6 +44,7 @@ public abstract class BankOperation implements Serializable {
 
   @ManyToOne
   @JoinColumn(name = "id_account")
+  @JsonIgnore
   private Account account;
 
   protected BankOperation() {}
@@ -85,19 +87,5 @@ public abstract class BankOperation implements Serializable {
 
   public void setAccount(Account account) {
     this.account = account;
-  }
-
-  @Override
-  public String toString() {
-    return "BankOperation{"
-        + "idOperation="
-        + idOperation
-        + ", operationDate="
-        + operationDate
-        + ", amount="
-        + amount
-        + ", account="
-        + account
-        + '}';
   }
 }

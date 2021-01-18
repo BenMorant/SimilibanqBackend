@@ -11,7 +11,7 @@ public class SavingsAccount extends Account {
   public SavingsAccount() {}
 
   public SavingsAccount(
-      Integer idAccount, double balance, Customer customer, List<BankOperation> bankOperations) {
+      Long idAccount, double balance, Customer customer, List<BankOperation> bankOperations) {
     super(idAccount, balance, customer, bankOperations);
   }
 }

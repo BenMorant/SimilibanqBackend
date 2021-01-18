@@ -36,7 +36,7 @@ public abstract class Account implements Serializable {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "id_account")
-  private Integer idAccount;
+  private Long idAccount;
 
   @Column(name = "balance")
   private double balance;
@@ -52,18 +52,18 @@ public abstract class Account implements Serializable {
   protected Account() {}
 
   protected Account(
-      Integer idAccount, double balance, Customer customer, List<BankOperation> bankOperations) {
+      Long idAccount, double balance, Customer customer, List<BankOperation> bankOperations) {
     this.idAccount = idAccount;
     this.balance = balance;
     this.customer = customer;
     this.bankOperations = bankOperations;
   }
 
-  public Integer getIdAccount() {
+  public Long getIdAccount() {
     return idAccount;
   }
 
-  public void setIdAccount(Integer idAccount) {
+  public void setIdAccount(Long idAccount) {
     this.idAccount = idAccount;
   }
 
@@ -89,19 +89,5 @@ public abstract class Account implements Serializable {
 
   public void setBankOperations(List<BankOperation> bankOperations) {
     this.bankOperations = bankOperations;
-  }
-
-  @Override
-  public String toString() {
-    return "Account{"
-        + "idAccount="
-        + idAccount
-        + ", balance="
-        + balance
-        + ", customer="
-        + customer
-        + ", bankOperations="
-        + bankOperations
-        + '}';
   }
 }

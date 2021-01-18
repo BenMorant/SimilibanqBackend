@@ -91,23 +91,4 @@ public class Customer implements Serializable {
   public void setCustomerIdentifier(String customerIdentifier) {
     this.customerIdentifier = customerIdentifier;
   }
-
-  @Override
-  public String toString() {
-    return "Customer{"
-        + "idCustomer="
-        + idCustomer
-        + ", firstName='"
-        + firstName
-        + '\''
-        + ", lastName='"
-        + lastName
-        + '\''
-        + ", customerIdentifier='"
-        + customerIdentifier
-        + '\''
-        + ", accounts="
-        + accounts
-        + '}';
-  }
 }
