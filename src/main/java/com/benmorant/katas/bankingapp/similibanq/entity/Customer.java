@@ -9,12 +9,12 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
-import javax.persistence.Table;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
+import org.springframework.data.relational.core.mapping.Table;
 
 @Entity
-@Table(name = "customer")
+@Table
 public class Customer implements Serializable {
 
   private static final long serialVersionUID = 1L;
@@ -24,11 +24,8 @@ public class Customer implements Serializable {
   @Column(name = "id_customer")
   private Long idCustomer;
 
-  @Column(name = "first_name")
-  private String firstName;
-
-  @Column(name = "last_name")
-  private String lastName;
+  @Column(name = "name")
+  private String name;
 
   @Column(name = "customer_identifier")
   private String customerIdentifier;
@@ -39,16 +36,8 @@ public class Customer implements Serializable {
 
   public Customer() {}
 
-  public Customer(
-      Long idCustomer,
-      String firstName,
-      String lastName,
-      List<Account> accounts,
-      String customerIdentifier) {
-    this.idCustomer = idCustomer;
-    this.firstName = firstName;
-    this.lastName = lastName;
-    this.accounts = accounts;
+  public Customer(String name, String customerIdentifier) {
+    this.name = name;
     this.customerIdentifier = customerIdentifier;
   }
 
@@ -58,22 +47,6 @@ public class Customer implements Serializable {
 
   public void setIdCustomer(Long idCustomer) {
     this.idCustomer = idCustomer;
-  }
-
-  public String getFirstName() {
-    return firstName;
-  }
-
-  public void setFirstName(String firstName) {
-    this.firstName = firstName;
-  }
-
-  public String getLastName() {
-    return lastName;
-  }
-
-  public void setLastName(String lastName) {
-    this.lastName = lastName;
   }
 
   public List<Account> getAccounts() {
@@ -92,22 +65,11 @@ public class Customer implements Serializable {
     this.customerIdentifier = customerIdentifier;
   }
 
-  @Override
-  public String toString() {
-    return "Customer{"
-        + "idCustomer="
-        + idCustomer
-        + ", firstName='"
-        + firstName
-        + '\''
-        + ", lastName='"
-        + lastName
-        + '\''
-        + ", customerIdentifier='"
-        + customerIdentifier
-        + '\''
-        + ", accounts="
-        + accounts
-        + '}';
+  public String getName() {
+    return name;
+  }
+
+  public void setName(String name) {
+    this.name = name;
   }
 }

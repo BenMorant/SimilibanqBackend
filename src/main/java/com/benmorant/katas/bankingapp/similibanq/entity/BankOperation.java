@@ -1,8 +1,13 @@
 package com.benmorant.katas.bankingapp.similibanq.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import javax.persistence.Column;
@@ -16,6 +21,7 @@ import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import org.springframework.data.relational.core.mapping.Table;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
 @JsonSubTypes({
@@ -26,6 +32,7 @@ import javax.persistence.ManyToOne;
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "operation_type")
 @DiscriminatorValue("BankOperation")
+@Table
 public abstract class BankOperation implements Serializable {
 
   private static final long serialVersionUID = 1L;
@@ -35,6 +42,8 @@ public abstract class BankOperation implements Serializable {
   @Column(name = "id_operation")
   private Long idOperation;
 
+  @JsonDeserialize(using = LocalDateTimeDeserializer.class)
+  @JsonSerialize(using = LocalDateTimeSerializer.class)
   @Column(name = "operation_date")
   private LocalDateTime operationDate;
 
@@ -43,13 +52,12 @@ public abstract class BankOperation implements Serializable {
 
   @ManyToOne
   @JoinColumn(name = "id_account")
+  @JsonIgnore
   private Account account;
 
   protected BankOperation() {}
 
-  protected BankOperation(
-      Long idOperation, LocalDateTime operationDate, double amount, Account account) {
-    this.idOperation = idOperation;
+  protected BankOperation(LocalDateTime operationDate, double amount, Account account) {
     this.operationDate = operationDate;
     this.amount = amount;
     this.account = account;
@@ -85,19 +93,5 @@ public abstract class BankOperation implements Serializable {
 
   public void setAccount(Account account) {
     this.account = account;
-  }
-
-  @Override
-  public String toString() {
-    return "BankOperation{"
-        + "idOperation="
-        + idOperation
-        + ", operationDate="
-        + operationDate
-        + ", amount="
-        + amount
-        + ", account="
-        + account
-        + '}';
   }
 }
