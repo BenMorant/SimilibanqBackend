@@ -9,9 +9,20 @@ import org.springframework.data.relational.core.mapping.Table;
 @Table
 public class CurrentAccount extends Account {
 
+  private double overdraft;
+
   public CurrentAccount() {}
 
-  public CurrentAccount(double balance, Customer customer) {
+  public CurrentAccount(double balance, Customer customer, double overdraft) {
     super(balance, customer);
+    this.overdraft = overdraft;
+  }
+
+  public double getOverdraft() {
+    return overdraft;
+  }
+
+  public void setOverdraft(double overdraft) {
+    this.overdraft = overdraft;
   }
 }
