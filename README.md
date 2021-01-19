@@ -5,10 +5,10 @@ Similibanq backend project with Java and Spring
 
 ## Prerequisite
 
-- [Oracle JDK 8](https://www.oracle.com/java/technologies/javase-jdk8-downloads.html) 
+- [Oracle JDK 8](https://www.oracle.com/java/technologies/javase-jdk8-downloads.html)
   OR [OpenJDK 8](https://openjdk.java.net/install)
 - [Maven 3.6.3](https://maven.apache.org/)
-- [MySQL server 5.7+](https://dev.mysql.com/downloads) 
+- [MySQL server 5.7+](https://dev.mysql.com/downloads)
   or [MariaDB Server 10.4.13+](https://go.mariadb.com/download-mariadb-server-community.html)
 
 ## Installation
